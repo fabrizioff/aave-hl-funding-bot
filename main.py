@@ -141,6 +141,7 @@ class DisplayManager:
     def __init__(self):
         self.last_display_time = 0
         self.update_interval = 1  # seconds
+        self.net_apy_usd = None  # Add this to store the APY
 
     def clear_screen(self):
         """Clear the terminal screen"""
@@ -342,8 +343,7 @@ class DisplayManager:
                     colalign=('right', 'right')
                 ))
 
-    @staticmethod
-    def print_reserves_info(aave_data, data_manager):
+    def print_reserves_info(self, aave_data, data_manager):
         """Print all available Aave reserves and their info"""
         reserves = get_reserves_data()
         filtered_reserves = [r for r in reserves if r['symbol'] in ['WETH', 'USDC']]
@@ -426,6 +426,7 @@ class DisplayManager:
                     print(f"Net Aave APY (weighted method): {net_apy_weighted:.2f}%")
                     print(f"HL Funding Rate: {eth_funding:.6%} (hourly) / {funding_apy:.2f}% (${hl_funding_earnings:.2f})")
                     print(f"Global Net APY (USD method): {net_apy_usd:.2f}% (${net_profit_usd:.2f})")
+                    self.net_apy_usd = net_apy_usd  # Store it when calculated in the strategy breakdown
 
 async def main():
     try:
@@ -457,6 +458,11 @@ async def main():
                 
                 # Use the new display method
                 display_manager.display_all(data_manager)
+                
+                if not strategy_executed and not data_manager.has_open_positions():
+                    if display_manager.net_apy_usd is not None:
+                        if await executor.should_execute(display_manager.net_apy_usd):
+                            strategy_executed = await executor.execute_strategy()
                 
                 await data_manager.position_monitor.monitor_liquidation_risk()
                 await asyncio.sleep(1)
