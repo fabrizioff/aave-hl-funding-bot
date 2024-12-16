@@ -1,0 +1,6 @@
+web3==6.11.3
+eth-utils==2.3.0
+eth-abi==4.2.1
+hyperliquid-python-sdk
+python-dotenv
+tabulate
