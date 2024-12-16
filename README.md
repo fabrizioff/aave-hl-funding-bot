@@ -18,6 +18,7 @@ Here a screenshot of the bot in action:
 ## Todo
 - better tracking of PnL in terms of fees, delta price pnl, etc.
 - automate exit if negative expected annualized return or partial exit if risk of liquidation
+- reorganize the codebase (e.g. move classes in main.py to separate files)
 
 ## Key Components
 - `main.py`: Initializes configurations and starts the bot.
